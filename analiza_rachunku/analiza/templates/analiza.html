@@ -1,0 +1,159 @@
+{% extends 'glowny.html' %}
+{% block tytul %} Analiza Rachunku {% endblock %}
+{% block strona %}
+{% load static %}
+{% load bootstrap %}
+{% load widget_tweaks %}
+
+    <!-- -----------------------------------------------------NAVBAR---------------------------------------------- -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Firenet</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Pobranie danych
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">EXCEL</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">XML</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- -------------------------------------------------------------------------------------------------------- -->
+    <!-- ---------------------------------------- Działanie option'a ------------------------------------------- -->
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <form method="get">
+                    <div class="container">
+                        <div class="row">
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.id.label_tag }}
+                                {% render_field filter.form.id class="form-control" %}
+                            </th>   
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.tytul.label_tag }}
+                                {% render_field filter.form.tytul class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.rodzaj_operaji.label_tag }}
+                                {% render_field filter.form.rodzaj_operaji class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.kwota.label_tag }}
+                                {% render_field filter.form.kwota class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.waluta.label_tag }}
+                                {% render_field filter.form.waluta class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.konto_zrodlowe.label_tag }}
+                                {% render_field filter.form.konto_zrodlowe class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.konto_docelowe.label_tag }}
+                                {% render_field filter.form.konto_docelowe class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.data_realizacji.label_tag }}
+                                {% render_field filter.form.data_realizacji class="form-control" %}
+                            </th>
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.data_zlecenia_przelewu.label_tag }}
+                                {% render_field filter.form.data_zlecenia_przelewu class="form-control" %}
+                            </th>
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.zleceniodawca.label_tag }}
+                                {% render_field filter.form.zleceniodawca class="form-control" %}
+                            </th>
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.beneficjent.label_tag }}
+                                {% render_field filter.form.beneficjent class="form-control" %}
+                            </th>
+                            <th scope="col" class="form-group col-sm-4 col-md-3">
+                                {{ filter.form.kod_rodzaju_transakcji.label_tag }}
+                                {% render_field filter.form.kod_rodzaju_transakcji class="form-control" %}
+                            </th>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            Search
+                        </button>
+                    </div>
+                </form>
+            </tr>
+        </thead>
+        <tbody>
+            {% for datas in filter.qs %}
+                <tr>
+                    <td>{{ datas.id }}</td>
+                    <td>{{ datas.tytul }}</td>
+                    <td>{{ datas.rodzaj_operaji }}</td>
+                    <td>{{ datas.kwota }}</td>
+                    <td>{{ datas.waluta }}</td>
+                    <td>{{ datas.konto_zrodlowe }}</td>
+                    <td>{{ datas.konto_docelowe }}</td>
+                    <td>{{ datas.data_realizacji }}</td>
+                    <td>{{ datas.data_zlecenia_przelewu }}</td>
+                    <td>{{ datas.zleceniodawca }}</td>
+                    <td>{{ datas.beneficjent }}</td>
+                    <td>{{ datas.kod_rodzaju_transakcji }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+
+
+    <!-- -------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------------PAGINACJA------------------------------------------ -->
+    <!-- {% if dane.has_other_pages %}
+        <nav aria-label="Page navigation example " style="margin-bottom: 50px;">
+            <ul class="pagination justify-content-center">
+                {% if dane.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link bg-dark" href="?page={{ dane.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                            <i class="material-icons text-danger "><i class="fas fa-backward"></i></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="disabled page-item">
+                        <a class="page-link bg-dark" href="#!">
+                            <i class="material-icons"><i class="fas fa-backward"></i></i>
+                        </a>
+                    </li>
+                {% endif %}
+                {% for num in dane.paginator.page_range %}
+                    {% if dane.number == num %}
+                        <li class=" page-item bg-dark">
+                            <a class="page-link bg-dark text-white" href="#!">{{ num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link bg-dark text-danger" style="opacity: 0.9;" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                {% if dane.has_next %}
+                    <li class="page-item">
+                        <a class="page-link bg-dark" href="?page={{ dane.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                            <i class="material-icons text-danger"><i class="fas fa-forward"></i></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="disabled page-item"><a class="page-link bg-dark" href="#!"><i class="material-icons"><i class="fas fa-forward"></i></i></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %} -->
+    <!-- -------------------------------------------------------------------------------------------------------- -->
+{% endblock %}

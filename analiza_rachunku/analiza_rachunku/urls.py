@@ -14,12 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from analiza.views import index
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.urls import path,include
+from analiza.views import RachunkiView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index)
-]
-urlpatterns += staticfiles_urlpatterns()
+    path('',RachunkiView.as_view(), name='analiza')
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
