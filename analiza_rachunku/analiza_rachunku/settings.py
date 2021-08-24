@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'bootstrap5',
     'django_filters',
     'bootstrapform',
-    'widget_tweaks'
+    'widget_tweaks',
+    'xlwt',
+    'import_export'
 ]
 
 MIDDLEWARE = [
@@ -131,6 +133,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/

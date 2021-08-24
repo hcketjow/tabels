@@ -5,10 +5,14 @@ import django_filters
 
 class RachunkiFilter(django_filters.FilterSet):
     tytul = django_filters.CharFilter(lookup_expr='icontains')
+    data_realizacji = django_filters.CharFilter(lookup_expr='icontains')
+    data_zlecenia_przelewu = django_filters.CharFilter(lookup_expr='icontains')
+    beneficjent = django_filters.CharFilter(lookup_expr='icontains')
+    konto_docelowe = django_filters.CharFilter(lookup_expr='icontains')
+    zleceniodawca = django_filters.CharFilter(lookup_expr='icontains')
     class Meta:
         model = Rachunki
         fields = [
-            'id',
             'tytul',
             'rodzaj_operaji',
             'kwota',
@@ -21,3 +25,4 @@ class RachunkiFilter(django_filters.FilterSet):
             'beneficjent',
             'kod_rodzaju_transakcji',
         ]
+        

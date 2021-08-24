@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from analiza.views import RachunkiView
+from analiza.views import index,export_excel,export_xml
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',RachunkiView.as_view(), name='analiza')
+    path('',index),
+    path('export_excel', export_excel, name='export_excel'),
+    path('export_xml', export_xml, name='export_xml')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

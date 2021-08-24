@@ -19,9 +19,9 @@
                             Pobranie danych
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">EXCEL</a></li>
+                            <li><a class="dropdown-item" href="{% url 'export_excel' %}">EXCEL</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">XML</a></li>
+                            <li><a class="dropdown-item" href="{% url 'export_xml' %}">XML</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -36,11 +36,7 @@
             <tr>
                 <form method="get">
                     <div class="container">
-                        <div class="row">
-                            <th scope="col" class="form-group col-sm-4 col-md-3">
-                                {{ filter.form.id.label_tag }}
-                                {% render_field filter.form.id class="form-control" %}
-                            </th>   
+                        <div class="row">  
                             <th scope="col" class="form-group col-sm-4 col-md-3">
                                 {{ filter.form.tytul.label_tag }}
                                 {% render_field filter.form.tytul class="form-control" %}
@@ -87,36 +83,37 @@
                             </th>
                         </div>
                         <button type="submit" class="btn btn-primary">
-                            Search
+                            Znajdź
                         </button>
                     </div>
                 </form>
             </tr>
         </thead>
         <tbody>
-            {% for datas in filter.qs %}
-                <tr>
-                    <td>{{ datas.id }}</td>
-                    <td>{{ datas.tytul }}</td>
-                    <td>{{ datas.rodzaj_operaji }}</td>
-                    <td>{{ datas.kwota }}</td>
-                    <td>{{ datas.waluta }}</td>
-                    <td>{{ datas.konto_zrodlowe }}</td>
-                    <td>{{ datas.konto_docelowe }}</td>
-                    <td>{{ datas.data_realizacji }}</td>
-                    <td>{{ datas.data_zlecenia_przelewu }}</td>
-                    <td>{{ datas.zleceniodawca }}</td>
-                    <td>{{ datas.beneficjent }}</td>
-                    <td>{{ datas.kod_rodzaju_transakcji }}</td>
-                </tr>
-            {% endfor %}
+            <div class="container">
+                {% for datas in filter.qs %}
+                    <tr>
+                        <td>{{ datas.tytul }}</td>
+                        <td>{{ datas.rodzaj_operaji }}</td>
+                        <td style="text-align: right;">{{ datas.kwota }}</td>
+                        <td>{{ datas.waluta }}</td>
+                        <td>{{ datas.konto_zrodlowe }}</td>
+                        <td>{{ datas.konto_docelowe }}</td>
+                        <td>{{ datas.data_realizacji }}</td>
+                        <td>{{ datas.data_zlecenia_przelewu }}</td>
+                        <td>{{ datas.zleceniodawca }}</td>
+                        <td>{{ datas.beneficjent }}</td>
+                        <td>{{ datas.kod_rodzaju_transakcji }}</td>
+                    </tr>
+                {% endfor %}
+            </div>
         </tbody>
       </table>
 
 
     <!-- -------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------------------PAGINACJA------------------------------------------ -->
-    <!-- {% if dane.has_other_pages %}
+    {% if dane.has_other_pages %}
         <nav aria-label="Page navigation example " style="margin-bottom: 50px;">
             <ul class="pagination justify-content-center">
                 {% if dane.has_previous %}
@@ -154,6 +151,6 @@
                 {% endif %}
             </ul>
         </nav>
-    {% endif %} -->
+    {% endif %}
     <!-- -------------------------------------------------------------------------------------------------------- -->
 {% endblock %}
