@@ -1,0 +1,167 @@
+{% extends 'glowny.html' %}
+{% block tytul %} Analiza Rachunku {% endblock %}
+{% block strona %}
+{% load static %}
+{% load bootstrap %}
+{% load widget_tweaks %}
+{% load myapp_extras %}
+
+{% if user.is_authenticated %}
+<div class="container-fluid">
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark p-3">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <a class="navbar-brand" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+                    Firenet
+                </a>
+                <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasExampleLabel">Przejdź do:</h5>
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <hr>
+                        <div>
+                            <a href="{% url 'przeplywy_kont' %}">
+                                <button class="btn btn-success">Przepływy między kontami  <i class="fas fa-file-invoice-dollar"></i>
+                                </button>
+                            </a>
+                            <a href="{% url 'graphs' %}">
+                                <button>Grafy</button>
+                            </a>
+                                <hr>
+                            <a href="{% url 'salda_kont' %}">
+                                <button class="btn btn-info">Salda kont źródłwych  <i class="fas fa-balance-scale-right"></i>
+                                </button>
+                            </a>
+                                <hr>
+                            <a href="{% url 'salda_docel' %}">
+                                <button class="btn btn-secondary">Salda kont docelowych  <i class="fas fa-money-check"></i>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <h4 class="nav-item dropdown" style="color: rgba(255, 255, 255, 0.335);">
+                        Przepływy między kontami
+                    </h4>
+                </ul>
+                {% if user.is_authenticated %}
+                    <a href="/logout"><button class="btn btn-danger">Wyloguj się</button></a>
+                {% else %}
+                    <a href="/login"><button class="btn btn-success">Zaloguj się</button></a>
+                {% endif %}          
+            </div>
+        </div>
+    </nav>
+</div>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+        #mynetwork {
+            width: 1900px;
+            height: 800px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+</style>
+
+</head>
+
+<body>
+    <div id = "mynetwork">
+        <div id="beneficjent">
+            {% for grafy in grafy %}
+                {{ grafy.beneficjent }} <br>
+            {% endfor %}
+        </div> 
+    </div>
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        var beneficjent = document.getElementById('beneficjent');
+        
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([
+            {"id": 0, "label": 'BENEFICJENT', "shape": "dot"}, 
+            {"id": 1, "label": 'MARSHAL LION CONSULTING SP.ZO.O. UL MARSZAŁKOWSKA 72 m. 27 00545 WARSZAWA', "shape": "dot"}, 
+            {"id": 2, "label": 'MAŁGORZATA MARTA GRZESIAKOS. ŁUKASZÓWKI 7 M.134-500 ZAKOPANE', "shape": "dot"}, 
+            {"id": 3, "label": 'TWÓJ DOM 04249010440000420042759401', "shape": "dot"},
+            {"id": 4, "label": '73114020040000310201743480', "shape": "dot"},
+            {"id": 5, "label": '50102055581111105437900080', "shape": "dot", "title": beneficjent},
+        ]);
+
+        edges = new vis.DataSet([
+            {"from": 0, "to": 1}, 
+            {"from": 0, "to": 2}, 
+            {"from": 0, "to": 3}, 
+            {"from": 0, "to": 4}, 
+        ]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+            "configure": {
+                "enabled": false
+            },
+            "edges": {
+                "color": {
+                    "inherit": true
+                },
+                "smooth": {
+                    "enabled": false,
+                    "type": "continuous"
+                }
+            },
+            "interaction": {
+                "dragNodes": true,
+                "hideEdgesOnDrag": false,
+                "hideNodesOnDrag": false
+            },
+            "physics": {
+                "enabled": true,
+                "stabilization": {
+                    "enabled": true,
+                    "fit": true,
+                    "iterations": 1000,
+                    "onlyDynamicEdges": false,
+                    "updateInterval": 50
+                }
+            }
+        };
+        
+        network = new vis.Network(container, data, options);
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+{% else %}
+    <h1>BRAK DOSTĘPU - ZALOGUJ SIĘ !!! </h1>
+    <button class="btn btn-primary">
+        <a href="{% url 'poczatek' %}" class="text-light">Zaloguj się</a>
+    </button>
+{% endif %} 
+{% endblock %}

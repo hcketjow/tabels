@@ -1,0 +1,42 @@
+{% extends 'glowny.html' %}
+{% block tytul %} Salda kont docelowych {% endblock %}
+{% block strona %}
+{% load static %}
+{% load bootstrap %}
+{% load widget_tweaks %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'main' %}">Firenet</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
+
+
+<h1 class="text-center fw-light">Salda kont docelowych</h1>
+<p>Suma wszystkich elementów: {{ salda_kont_docel }} </p>
+<br>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Konto źródłowe</th>
+                <th scope="col">Konto docelowe</th>
+                <th scope="col">Kwota</th>
+                <th scope="col">Waluta</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for datas in dane %}
+                <tr>
+                    <td>{{ datas.konto_zrodlowe }}</td>
+                    <td>{{ datas.Kwota_suma_2 }}</td>
+                    <td>{{ datas.waluta }}</td>
+                    <td>{{ datas.zleceniodawca }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+  </table>
+
+{% endblock %}

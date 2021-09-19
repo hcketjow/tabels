@@ -1,0 +1,300 @@
+{% extends 'glowny.html' %}
+{% block tytul %} Analiza Rachunku {% endblock %}
+{% block strona %}
+{% load static %}
+{% load bootstrap %}
+{% load widget_tweaks %}
+{% load myapp_extras %}
+
+{% if user.is_authenticated %}
+<div class="container-fluid">
+    <!-- -----------------------------------------------------NAVBAR---------------------------------------------- -->
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark p-3">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <a class="navbar-brand" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+                    Firenet
+                </a>
+                <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasExampleLabel">Przejdź do:</h5>
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <hr>
+                        <div>
+                            <a href="{% url 'przeplywy_kont' %}">
+                                <button class="btn btn-success">Przepływy między kontami  <i class="fas fa-file-invoice-dollar"></i>
+                                </button>
+                            </a>
+                            <a href="{% url 'graphs' %}">
+                                <button>Grafy</button>
+                            </a>
+                                <hr>
+                            <a href="{% url 'salda_kont' %}">
+                                <button class="btn btn-info">Salda kont źródłwych  <i class="fas fa-balance-scale-right"></i>
+                                </button>
+                            </a>
+                                <hr>
+                            <a href="{% url 'salda_docel' %}">
+                                <button class="btn btn-secondary">Salda kont docelowych  <i class="fas fa-money-check"></i>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Export danych
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'export_excel' %}">EXCEL</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'export_xml' %}">XML</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                {% if user.is_authenticated %}
+                    <a href="/logout"><button class="btn btn-danger">Wyloguj się</button></a>
+                {% else %}
+                    <a href="/login"><button class="btn btn-success">Zaloguj się</button></a>
+                {% endif %}          
+            </div>
+        </div>
+    </nav>
+    <!-- -------------------------------------------------------------------------------------------------------- -->
+    <!-- ---------------------------------------- Działanie filtracji danych ------------------------------------------- -->
+
+    <table class="table table-bordered border-white table-hover table-dark text-light">
+        <thead>
+            <tr>
+                <th scope="col" class="text-center col-6 fw-light">Ilość wszystkich transakcji w bazie: </th>
+                <th scope="col" class="text-center col-6 fw-light">Całościowa wartość transakcji: </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="text-center fw-bolder fs-4">{{ filter_rachunki_count }} </td>  
+                {% for suma_pag_fronts in suma_pag_front %}
+                    {% if suma_pag_fronts is None %}             
+                        <p> Brak danych</p>
+                    {% else %}
+                        <td class="text-center fw-bolder fs-4 d-block">  
+                            {{ suma_pag_fronts.waluta }} : {{ suma_pag_fronts.kwota }}  
+                        </td>
+                    {% endif %}
+                {% endfor %}        
+            </tr>
+        </tbody>
+    </table>   
+    <table class="table table-bordered border-white table-hover table-dark text-light">
+        <thead>
+            <tr>
+              <th scope="col" class="text-center col-6 fw-light">Ilość transakcji na stronie: </th>
+              <th scope="col" class="text-center col-6 fw-light">Wartość transakcji na stronie: </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <!-- zmien -->
+              <td class="text-center fw-bolder fs-4">{{ filter_count }}</td>
+                {% for suma_kwotas in suma_kwota.items %}
+                    <td class="text-center fw-bolder fs-4"> {{suma_kwota.kwota}}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>   
+
+    <hr>
+   
+  
+   
+    <table class="table table-sortable">
+        <thead>
+            <tr>
+                <form method="get">
+                    <div class="container">
+                        <div class="row" id="AnalizaTable">  
+                            <th scope="col" class="form-group col">
+                                {{ filter.form.tytul.label_tag }}
+                                {% render_field filter.form.tytul class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col">
+                                {{ filter.form.rodzaj_operaji.label_tag }}
+                                {% render_field filter.form.rodzaj_operaji class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col">
+                                {{ filter.form.kwota.label_tag }}
+                                {% render_field filter.form.kwota class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col">
+                                {{ filter.form.waluta.label_tag }}
+                                {% render_field filter.form.waluta class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col">
+                                {{ filter.form.konto_zrodlowe.label_tag }}
+                                {% render_field filter.form.konto_zrodlowe class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col">
+                                {{ filter.form.konto_docelowe.label_tag }}
+                                {% render_field filter.form.konto_docelowe class="form-control" %}
+                            </th> 
+                            <th scope="col" class="form-group col">
+                                {{ filter.form.data_realizacji.label_tag }}
+                                {% render_field filter.form.data_realizacji class="form-control" %}
+                            </th>
+                            <th scope="col" class="form-group col">
+                                {{ filter.form.data_zlecenia_przelewu.label_tag }}
+                                {% render_field filter.form.data_zlecenia_przelewu class="form-control" %}
+                            </th>
+                            <th scope="col" class="form-group col">
+                                {{ filter.form.zleceniodawca.label_tag }}
+                                {% render_field filter.form.zleceniodawca class="form-control" %}
+                            </th>
+                            <th scope="col" class="form-group col">
+                                {{ filter.form.beneficjent.label_tag }}
+                                {% render_field filter.form.beneficjent class="form-control" %}
+                            </th>
+                            <th scope="col" class="form-group col">
+                                {{ filter.form.kod_rodzaju_transakcji.label_tag }}
+                                {% render_field filter.form.kod_rodzaju_transakcji class="form-control" %}
+                            </th>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <button type="submit" class="btn btn-primary">
+                                    Znajdź
+                                </button>
+                            </div>
+                            <div class="col-auto">
+                                <select class="form-select" name='choice_rows_page'>
+                                    <option value="50">50</option>
+                                    <option value="100" selected>100</option>
+                                    <option value="150">150</option>                                    
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </tr>
+        </thead>
+        <tbody>
+            <div class="container">
+                {% for datas in dane %}
+                    <tr style="font-size: 15px;">
+                        <td>{{ datas.tytul }}</td>
+                        <td>{{ datas.rodzaj_operaji }}</td>
+                        <td style="text-align: right;" id="kwota">{{ datas.kwota }}</td>
+                        <td>{{ datas.waluta }}</td>
+                        <td>{{ datas.konto_zrodlowe }}</td>
+                        <td>{{ datas.konto_docelowe }}</td>
+                        <td>{{ datas.data_realizacji }}</td>
+                        <td>{{ datas.data_zlecenia_przelewu }}</td>
+                        <td>{{ datas.zleceniodawca }}</td>
+                        <td>{{ datas.beneficjent }}</td>
+                        <td>{{ datas.kod_rodzaju_transakcji }}</td>
+                    </tr>
+                {% endfor %}
+            </div>
+        </tbody>
+      </table>
+      <!-- Sorting the table -->
+      <script>
+        function sortTableByColumn(table, column, asc = true) {
+            const dirModifier = asc ? 1 : -1;
+            const tBody = table.tBodies[0];
+            const rows = Array.from(tBody.querySelectorAll("tr"));
+
+            // Sort each row
+            const sortedRows = rows.sort((a, b) => {
+                const aColText = a.querySelector(`td:nth-child(${ column + 1 })`).textContent.trim();
+                const bColText = b.querySelector(`td:nth-child(${ column + 1 })`).textContent.trim();
+
+                return aColText > bColText ? (1 * dirModifier) : (-1 * dirModifier);
+            });
+
+            // Remove all existing TRs from the table
+            while (tBody.firstChild) {
+                tBody.removeChild(tBody.firstChild);
+            }
+
+            // Re-add the newly sorted rows
+            tBody.append(...sortedRows);
+
+            // Remember how the column is currently sorted
+            table.querySelectorAll("th").forEach(th => th.classList.remove("th-sort-asc", "th-sort-desc"));
+            table.querySelector(`th:nth-child(${ column + 1})`).classList.toggle("th-sort-asc", asc);
+            table.querySelector(`th:nth-child(${ column + 1})`).classList.toggle("th-sort-desc", !asc);
+        }
+
+        document.querySelectorAll(".table-sortable th").forEach(headerCell => {
+            headerCell.addEventListener("click", () => {
+                const tableElement = headerCell.parentElement.parentElement.parentElement;
+                const headerIndex = Array.prototype.indexOf.call(headerCell.parentElement.children, headerCell);
+                const currentIsAscending = headerCell.classList.contains("th-sort-asc");
+
+                sortTableByColumn(tableElement, headerIndex, !currentIsAscending);
+            });
+        });
+    </script>
+
+    <style>
+        .table-sortable th {
+            cursor: pointer;
+        }
+
+        .table-sortable .th-sort-asc::after {
+            content: "\25b4";
+        }
+
+        .table-sortable .th-sort-desc::after {
+            content: "\25be";
+        }
+
+        .table-sortable .th-sort-asc::after,
+        .table-sortable .th-sort-desc::after {
+            margin-left: 5px;
+        }
+        .table-sortable .th-sort-asc,
+        .table-sortable .th-sort-desc {
+            background: rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    
+
+    <!-- -------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------------PAGINACJA------------------------------------------ -->
+
+    <ul class="pagination justify-content-center flex-wrap mt-2 mb-4">
+        {% if dane.has_previous %}
+            <a href="{% analiza_url 1 'page' request.GET.urlencode %}"></a>
+            <li class="page-item">
+                <a class="page-link" href="{% analiza_url dane.previous_page_number 'page' request.GET.urlencode %}"><i class="fas fa-arrow-circle-left"></i></a>
+            </li>
+        {% endif %}
+        {% for i in dane.paginator.page_range %}
+            <li class="page-item">
+                <a class="page-link" href="{% analiza_url i 'page' request.GET.urlencode %}"><span>{{ i }}</span></a>
+            </li>
+        {% endfor %}
+        {% if dane.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{% analiza_url dane.next_page_number 'page' request.GET.urlencode %}"><i class="fas fa-arrow-circle-right"></i></a>
+            </li>    
+                <a href="{% analiza_url dane.paginator.num_pages 'page' request.GET.urlencode %}"></a>
+        {% endif %}
+    </ul>
+    <!-- -------------------------------------------------------------------------------------------------------- -->
+</div>
+
+
+{% else %}
+    <h1>BRAK DOSTĘPU - ZALOGUJ SIĘ !!! </h1>
+    <button class="btn btn-primary">
+        <a href="{% url 'poczatek' %}" class="text-light">Zaloguj się</a>
+    </button>
+{% endif %} 
+{% endblock %}
